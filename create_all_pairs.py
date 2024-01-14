@@ -40,9 +40,9 @@ def generate_all_pairs():
         out_name = filename.split(".")[0]
         in_file = os.path.join(args.wordlists_dir, filename)
         out_file = os.path.join(args.wordpairs_dir, out_name + ".pairs" + SUFFIX)
-        with open(in_file, 'r') as f:
+        with open(in_file, 'r', encoding="utf-8") as f: #hrat069
             label_list = [line.rstrip('\n') for line in f]
-            with open(out_file, 'w') as o:
+            with open(out_file, 'w', encoding="utf-8") as o: #hrat069
                 for i in range(len(label_list)):
                     for j in range(i + 1, (len(label_list))):
                         o.write("{} {}\n".format(label_list[i], label_list[j]))

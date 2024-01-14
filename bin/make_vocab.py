@@ -23,9 +23,10 @@ SUFFIX = ".txt"
 def make_vocab():
     """Write out the first string from each line of the input file, regardless of composition."""
     vals = []
-    with open(args.vectors_file, 'r') as f, open(args.output_file, 'w') as o:
+    with open(args.vectors_file, 'r', encoding="utf-8") as f, open(args.output_file, 'w', encoding="utf-8") as o:
         for line in f:
             vals = line.rstrip().split(' ')
+            print(vals[0])
             o.write("{}\n".format(vals[0]))
         return 0
 
@@ -34,7 +35,7 @@ def make_vocab_lower_alphas():
     """Check the first string from each line of the input file, and if it contains 
     only lowercase English alphabet characters, write it out."""
     vals = []
-    with open(args.vectors_file, 'r') as f, open(args.output_file, 'w') as o:
+    with open(args.vectors_file, 'r', encoding="latin-1") as f, open(args.output_file, 'w', encoding="latin-1") as o:
         for line in f:
             vals = line.rstrip().split(' ')
             if re.search(r'[^a-z]', vals[0]):
@@ -43,6 +44,5 @@ def make_vocab_lower_alphas():
                 o.write("{}\n".format(vals[0]))
         return 0
 
-
 if __name__ == "__main__":
-    vocab = make_vocab_lower_alphas()
+    vocab = make_vocab()

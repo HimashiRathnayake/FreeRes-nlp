@@ -101,7 +101,7 @@ def distance(W, vocab, input_term1, input_term2):
 
 
 if __name__ == "__main__":
-    W, vocab = generate()
+    W, vocab = generate() # (hrat069 - W have a map between word index and vectors. vocab has a map between word index and word.)
     if args.source_dir is not None and args.output_dir is not None:
         # We are reading from one or more files containing word pair lists, and writing
         # pairwise relatedness scores to an output file.
@@ -114,16 +114,16 @@ if __name__ == "__main__":
                         shutil.copyfile((subdir + "/" + file), (args.output_dir + file))
                         os.remove(subdir + "/" + file)
 
-                    ID = file.rstrip().split("_")[0]  # relies on file name beginning with ID_
+                    ID = file.rstrip().split(".")[0]  # relies on file name beginning with ID_ (hrat069) changed _ to .
 
                     # On Mac, automatically generated .DS_Store files will cause an error, so ignore hidden files.
                     if not ((file.startswith('.')) or (file == "ID_list.txt")):
                         # Get all our needed files open for business.
-                        f_in = open(subdir + '/' + file, 'r')
-                        f_err = open(err + ID + ".errors.txt", 'w')
-                        f_lab = open(lab + ID + ".labels.txt", 'w')
-                        f_scr = open(scr + ID + ".scores.txt", 'w')
-                        f_labscr = open(labscr + ID + ".txt", 'w')
+                        f_in = open(subdir + '/' + file, 'r', encoding="utf-8") #hrat069
+                        f_err = open(err + ID + ".errors.txt", 'w', encoding="utf-8") #hrat069
+                        f_lab = open(lab + ID + ".labels.txt", 'w', encoding="utf-8") #hrat069
+                        f_scr = open(scr + ID + ".scores.txt", 'w', encoding="utf-8") #hrat069
+                        f_labscr = open(labscr + ID + ".txt", 'w', encoding="utf-8") #hrat069
 
                         # Calculate n-1 for original number of labels used to generate the all-pairs list.
                         cnt = 0
@@ -134,6 +134,7 @@ if __name__ == "__main__":
 
                         # Calculate relatedness scores.
                         linecnt = n_minus
+                        label_list = [] # hrat069
                         for line in f_in:
                             # Keeping track of when to write to the labels file.
                             if (linecnt == 0):
@@ -153,10 +154,16 @@ if __name__ == "__main__":
                                 else:
                                     f_labscr.write("%s%s%s\n" % (input_term1.ljust(20), input_term2.ljust(20), relatedness))
                                     f_scr.write("%s\n" % (relatedness))
-                                    if (linecnt == 1):
+                                    # if (linecnt == 1):
+                                    #     f_lab.write("%s\n" % (array[0]))
+                                    # if ((linecnt == 1) and (n_minus == 1)):  # (hrat069) - moved the indentation one level to the begin.
+                                    #     f_lab.write("%s\n" % (array[1]))
+                                    if array[0] not in label_list: #hrat069
+                                        label_list.append(array[0])
                                         f_lab.write("%s\n" % (array[0]))
-                                    if ((linecnt == 1) and (n_minus == 1)):
-                                        f_lab.write("%s\n" % (array[1]))
+                                    if array[1] not in label_list: #hrat069
+                                        label_list.append(array[1])
+                                        f_lab.write("%s\n" % (array[1]))    
                                 linecnt -= 1
                             except:
                                 print('Need a word pair but got:')

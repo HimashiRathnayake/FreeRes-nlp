@@ -46,3 +46,7 @@ including any default values, execute `python <script_name>.py --help`, substitu
 
 ## Getting the word embeddings
 The FreeRes-NLP word embeddings are stored in compressed format in the word_embeddings directory using [Git Large File Storage](https://git-lfs.github.com/). If you want to clone the repository and include the word embeddings, you will need to install git lfs--see info here on [versioning large files](https://docs.github.com/en/free-pro-team@latest/github/managing-large-files/versioning-large-files). Alternately, you can [download the file from GitHub directly](https://github.com/crystal-butler/FreeRes-nlp/raw/master/word_embeddings/FreeRes-NLP_word_embeddings.zip).
+
+python create_all_pairs.py files/word_lists files/word_pairs
+python word_pair_distance.py files/model2.vec --source_dir files/word_pairs --output_dir files/out
+python cluster_synonymy_scores.py files/out/Score_Lists files/out/Label_Lists files/clustering

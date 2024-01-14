@@ -81,8 +81,8 @@ def build_linkage_matrix(distances_array):
 def extract_dendro_name(labels_file, scores_file):
     labels_name = os.path.basename(labels_file)
     scores_name = os.path.basename(scores_file)
-    labels_prefix = labels_name.split('_')[0]
-    scores_prefix = scores_name.split('_')[0]
+    labels_prefix = labels_name.split('.')[0] # (hrat069) changed _ to .
+    scores_prefix = scores_name.split('.')[0] # (hrat069) changed _ to .
     assert labels_prefix == scores_prefix, "Labels and scores should have the same file name prefix."
     return labels_prefix
 
@@ -180,7 +180,7 @@ if __name__ == '__main__':
             # Set up the plot.
             fig, ax = plt.subplots(figsize=(14, 8.5))  #(width, height) in inches
             title = "Image: " + dendro_name
-            plt.title(title, fontsize=18)
+            plt.title(title, fontsize=12)
             plt.rc('ytick',labelsize=14)
             y_label = 'Cophenetic Coefficient (Cutoff: ' + str(args.dendro_cutoff) + ')'
             plt.ylabel(y_label, fontsize=16)
@@ -189,7 +189,7 @@ if __name__ == '__main__':
             plt.subplots_adjust(bottom=0.22, top=0.95, right=0.98, left=0.06)
             # Create the dendrogram, with a cutoff specified during module invocation.
             dendro = sch.dendrogram(linkage_matrix, labels=labels_array, color_threshold=args.dendro_cutoff, \
-                leaf_font_size=14, leaf_rotation=70, count_sort='ascending', ax=ax)
+                leaf_font_size=8, leaf_rotation=70, count_sort='ascending', ax=ax)
             ax.set_ylim(0, 1)
 
             # Save out the plot and statistics.
