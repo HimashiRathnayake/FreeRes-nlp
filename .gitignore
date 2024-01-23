@@ -12,3 +12,6 @@ files/word_pairs
 files/*.vec
 files/*.bin
 files/en-model.txt
+files/model
+files/sum
+.idea
