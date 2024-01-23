@@ -12,7 +12,10 @@ import argparse
 import pandas as pd
 import numpy as np
 import scipy.cluster.hierarchy as sch
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('scores_dir', help='full path to a directory containing all pairs synonymy scores', type=str)
@@ -104,6 +107,7 @@ def calculate_cluster_stats(linkage_matrix, distances_array):
     c_max = max(cluster_membership.values())
     c_sum = sum(cluster_membership.values())
     pct = 100 * (c_max / c_sum)
+    print(c_max, c_sum, pct)
     return cophenetic_coefficient, cluster_membership, pct
 
 
@@ -189,7 +193,7 @@ if __name__ == '__main__':
             plt.subplots_adjust(bottom=0.22, top=0.95, right=0.98, left=0.06)
             # Create the dendrogram, with a cutoff specified during module invocation.
             dendro = sch.dendrogram(linkage_matrix, labels=labels_array, color_threshold=args.dendro_cutoff, \
-                leaf_font_size=8, leaf_rotation=70, count_sort='ascending', ax=ax)
+                leaf_font_size=8, leaf_rotation=88, count_sort='ascending', ax=ax, above_threshold_color='lightgray')
             ax.set_ylim(0, 1)
 
             # Save out the plot and statistics.
