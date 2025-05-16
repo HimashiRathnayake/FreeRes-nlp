@@ -16,13 +16,15 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('scores_dir', help='full path to a directory containing all pairs synonymy scores', type=str)
-parser.add_argument('labels_dir', help='full path to a directory containing labels for all pairs synonymy scores', type=str)
+parser.add_argument('labels_dir', help='full path to a directory containing labels for all pairs synonymy scores',
+                    type=str)
 parser.add_argument('clustering_dir', help='full path to a directory where clustering output will be written', type=str)
-parser.add_argument('--dendro_cutoff', help='the cutoff value for agglomerative hierarchical clustering', default=0.7275, type=float)
+parser.add_argument('--dendro_cutoff', help='the cutoff value for agglomerative hierarchical clustering',
+                    default=0.7275, type=float)
 args = parser.parse_args()
+
 
 def make_input_lists():
     scores_files = []
@@ -36,7 +38,7 @@ def make_input_lists():
             if not entry.startswith('.'):
                 labels_files.append(entry)
     if (len(scores_files) < 1 or len(labels_files) < 1):
-        print ("Either scores or labels file list is empty: quitting!")
+        print("Either scores or labels file list is empty: quitting!")
         sys.exit()
     if (len(scores_files) != len(labels_files)):
         print("The number of scores files doesn't match the number of labels files: quitting!")
@@ -53,13 +55,14 @@ def make_arrays(scores_path, labels_path):
     scores_norm = normalize_array(scores_array)
     distances_array = 1 - scores_norm
     labels_array = np.array(labels[0][:])
-    assert len(pairs_scores[0]) == len(distances_array), "Scores dataframe and distances array should be the same length."
+    assert len(pairs_scores[0]) == len(
+        distances_array), "Scores dataframe and distances array should be the same length."
     assert len(labels[0]) == len(labels_array), "Labels dataframe and labels array should be the same length."
     return distances_array, labels_array
 
 
 def normalize_array(scores_array):
-    scores_norm = (scores_array - np.min(scores_array))/np.ptp(scores_array)
+    scores_norm = (scores_array - np.min(scores_array)) / np.ptp(scores_array)
     scores_norm = scores_norm.round(decimals=6)  # clean up floating point errors and reduce significant digits
     return scores_norm
 
@@ -91,8 +94,8 @@ def extract_dendro_name(labels_file, scores_file):
 
 
 def calculate_cluster_stats(linkage_matrix, distances_array):
-    """Calculate clustering statistics for cophenetic coefficient correlation, 
-    the number of clusters, the count of labels per cluster and the 
+    """Calculate clustering statistics for cophenetic coefficient correlation,
+    the number of clusters, the count of labels per cluster and the
     percent membershp in the largest cluster."""
     clusters = sch.fcluster(linkage_matrix, args.dendro_cutoff, criterion='distance')
     cluster_enumeration = np.unique(clusters)
@@ -107,7 +110,6 @@ def calculate_cluster_stats(linkage_matrix, distances_array):
     c_max = max(cluster_membership.values())
     c_sum = sum(cluster_membership.values())
     pct = 100 * (c_max / c_sum)
-    print(c_max, c_sum, pct)
     return cophenetic_coefficient, cluster_membership, pct
 
 
@@ -132,8 +134,9 @@ def format_cluster_stats(cophenetic_coefficient, cluster_membership, pct):
     stats_printout += ('Cluster: Count\n')
     for key in cluster_membership.keys():
         stats_printout += (str(key) + ': ' + str(cluster_membership[key]) + '\n')
-    cluster_max_membership = max(cluster_membership.items(), key=lambda x : x[1])
-    stats_printout += ('Cluster ' + str(cluster_max_membership[0]) + ' with ' + str(cluster_max_membership[1]) + ' members has ' + str(pct) + '% of the membership.\n')
+    cluster_max_membership = max(cluster_membership.items(), key=lambda x: x[1])
+    stats_printout += ('Cluster ' + str(cluster_max_membership[0]) + ' with ' + str(
+        cluster_max_membership[1]) + ' members has ' + str(pct) + '% of the membership.\n')
     pass_fail = classify_pass_fail(pct)
     stats_printout += ('Cluster coherence test: ' + pass_fail)
     return stats_printout
@@ -170,22 +173,24 @@ if __name__ == '__main__':
             distances_array, labels_array = make_arrays(scores_file, labels_file)
             expected_distances_count = check_expected_distances_count(labels_array)
             if (expected_distances_count != len(distances_array)):
-                print(f'The number of values in the {scores_file} distances list is {len(distances_array)}, but it should be {expected_distances_count}.')
+                print(
+                    f'The number of values in the {scores_file} distances list is {len(distances_array)}, but it should be {expected_distances_count}.')
                 input("Press Enter to continue...")
                 continue
-            
+
             linkage_matrix = build_linkage_matrix(distances_array)
-            assert (linkage_matrix.shape[0] + 1) == (len(labels_array)), "The linkage matrix and labels array have mismatched lengths."
+            assert (linkage_matrix.shape[0] + 1) == (
+                len(labels_array)), "The linkage matrix and labels array have mismatched lengths."
             cophenetic_coefficient, cluster_membership, pct = calculate_cluster_stats(linkage_matrix, distances_array)
             stats_printout = format_cluster_stats(cophenetic_coefficient, cluster_membership, pct)
 
             # Title the dendrogram, using the labels file name.
             dendro_name = extract_dendro_name(labels_file, scores_file)
             # Set up the plot.
-            fig, ax = plt.subplots(figsize=(14, 8.5))  #(width, height) in inches
+            fig, ax = plt.subplots(figsize=(14, 8.5))  # (width, height) in inches
             title = "Image: " + dendro_name
-            plt.title(title, fontsize=12)
-            plt.rc('ytick',labelsize=14)
+            plt.title(title, fontsize=18)
+            plt.rc('ytick', labelsize=14)
             y_label = 'Cophenetic Coefficient (Cutoff: ' + str(args.dendro_cutoff) + ')'
             plt.ylabel(y_label, fontsize=16)
             plt.axhline(y=args.dendro_cutoff, color="grey", linestyle="--")
@@ -193,7 +198,7 @@ if __name__ == '__main__':
             plt.subplots_adjust(bottom=0.22, top=0.95, right=0.98, left=0.06)
             # Create the dendrogram, with a cutoff specified during module invocation.
             dendro = sch.dendrogram(linkage_matrix, labels=labels_array, color_threshold=args.dendro_cutoff, \
-                leaf_font_size=8, leaf_rotation=88, count_sort='ascending', ax=ax, above_threshold_color='lightgray')
+                                    leaf_font_size=8, leaf_rotation=90, count_sort='ascending', ax=ax, above_threshold_color='lightgray')
             ax.set_ylim(0, 1)
 
             # Save out the plot and statistics.
